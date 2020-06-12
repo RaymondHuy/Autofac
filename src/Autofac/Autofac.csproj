@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <Description>Autofac is an IoC container for Microsoft .NET. It manages the dependencies between classes so that applications stay easy to change as they grow in size and complexity.</Description>
-    <VersionPrefix>5.1.4</VersionPrefix>
+    <!-- VersionPrefix patched by AppVeyor -->
+    <VersionPrefix>0.0.1</VersionPrefix>
     <TargetFrameworks>netstandard2.1;netstandard2.0;net461</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <NoWarn>$(NoWarn);CS1591;IDE0008</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Autofac</AssemblyName>
     <AssemblyOriginatorKeyFile>../../Autofac.snk</AssemblyOriginatorKeyFile>
@@ -21,7 +21,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/autofac/Autofac</RepositoryUrl>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.1' ">1.6.0</NetStandardImplicitPackageVersion>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
@@ -188,6 +187,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>GeneratedFactoryRegistrationSourceResources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Core\ImplicitRegistrationSourceResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ImplicitRegistrationSourceResources.resx</DependentUpon>
     </Compile>
     <Compile Update="Features\LazyDependencies\LazyRegistrationSourceResources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -377,6 +381,10 @@
     <EmbeddedResource Update="Features\GeneratedFactories\GeneratedFactoryRegistrationSourceResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>GeneratedFactoryRegistrationSourceResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Core\ImplicitRegistrationSourceResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ImplicitRegistrationSourceResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Features\LazyDependencies\LazyRegistrationSourceResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

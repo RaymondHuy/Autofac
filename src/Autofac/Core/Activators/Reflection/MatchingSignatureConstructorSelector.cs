@@ -65,10 +65,10 @@ namespace Autofac.Core.Activators.Reflection
             if (result.Length == 1)
                 return result[0];
 
-            if (!constructorBindings.Any())
+            if (constructorBindings.Length == 0)
                 throw new ArgumentException(MatchingSignatureConstructorSelectorResources.AtLeastOneBindingRequired);
 
-            var targetTypeName = constructorBindings.First().TargetConstructor.DeclaringType.Name;
+            var targetTypeName = constructorBindings[0].TargetConstructor.DeclaringType.Name;
             var signature = string.Join(", ", _signature.Select(t => t.Name).ToArray());
 
             if (result.Length == 0)

@@ -99,7 +99,7 @@ namespace Autofac
 
                 activator.DisposeInstance = rb.RegistrationData.Ownership == InstanceOwnership.OwnedByLifetimeScope;
 
-                if (rb.RegistrationData.ActivatedHandlers.Any() || rb.RegistrationData.ActivatingHandlers.Any())
+                if (rb.RegistrationData.ActivatedHandlers.Count > 0 || rb.RegistrationData.ActivatingHandlers.Count > 0)
                 {
                     var autoStartService = rb.RegistrationData.Services.First();
 
@@ -880,6 +880,35 @@ namespace Autofac
             where TReflectionActivatorData : ReflectionActivatorData
         {
             return registration.WithProperty(new NamedPropertyParameter(propertyName, propertyValue));
+        }
+
+        /// <summary>
+        /// Configure an explicit value for a property.
+        /// </summary>
+        /// <typeparam name="TLimit">Registration limit type.</typeparam>
+        /// <typeparam name="TReflectionActivatorData">Activator data type.</typeparam>
+        /// <typeparam name="TStyle">Registration style.</typeparam>
+        /// <typeparam name="TProperty">Type of the property being assigned.</typeparam>
+        /// <param name="registration">Registration to set property on.</param>
+        /// <param name="propertyExpression">Expression of a property on the target type.</param>
+        /// <param name="propertyValue">Value to supply to the property.</param>
+        /// <returns>A registration builder allowing further configuration of the component.</returns>
+        public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle>
+            WithProperty<TLimit, TReflectionActivatorData, TStyle, TProperty>(
+                this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration,
+                Expression<Func<TLimit, TProperty>> propertyExpression,
+                TProperty propertyValue)
+            where TReflectionActivatorData : ReflectionActivatorData
+        {
+            if (registration == null) throw new ArgumentNullException(nameof(registration));
+            if (propertyExpression == null) throw new ArgumentNullException(nameof(propertyExpression));
+            if (propertyValue == null) throw new ArgumentNullException(nameof(propertyValue));
+
+            var propertyInfo = (propertyExpression.Body as MemberExpression)?.Member as PropertyInfo;
+            if (propertyInfo == null)
+                throw new ArgumentOutOfRangeException(nameof(propertyExpression), RegistrationExtensionsResources.ExpressionDoesNotReferToProperty);
+
+            return registration.WithProperty(new NamedPropertyParameter(propertyInfo.Name, propertyValue));
         }
 
         /// <summary>

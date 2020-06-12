@@ -1,4 +1,9 @@
-version: 5.1.4.{build}
+version: '5.2.0.{build}'
+
+dotnet_csproj:
+  version_prefix: '5.2.0'
+  patch: true
+  file: 'src\**\*.csproj'
 
 configuration: Release
 
