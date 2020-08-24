@@ -36,7 +36,14 @@ namespace Autofac.Util
     /// </summary>
     internal static class ReflectionExtensions
     {
-        public static TDelegate CreateDelegate<TDelegate>(this MethodInfo method, object target)
+        /// <summary>
+        /// Create a typed delegate from a method info and the target object.
+        /// </summary>
+        /// <typeparam name="TDelegate">The delegate.</typeparam>
+        /// <param name="method">The method.</param>
+        /// <param name="target">The target object for the delegate.</param>
+        /// <returns>A constructed delegate.</returns>
+        public static TDelegate CreateDelegate<TDelegate>(this MethodInfo method, object? target)
             where TDelegate : Delegate
             => (TDelegate)method.CreateDelegate(typeof(TDelegate), target);
 
@@ -51,7 +58,7 @@ namespace Autofac.Util
             var mi = pi.Member as MethodInfo;
             if (mi != null && mi.IsSpecialName && mi.Name.StartsWith("set_", StringComparison.Ordinal) && mi.DeclaringType != null)
             {
-                prop = mi.DeclaringType.GetTypeInfo().GetDeclaredProperty(mi.Name.Substring(4));
+                prop = mi.DeclaringType.GetDeclaredProperty(mi.Name.Substring(4));
                 return true;
             }
 
@@ -71,7 +78,10 @@ namespace Autofac.Util
         public static PropertyInfo GetProperty<TDeclaring, TProperty>(
             Expression<Func<TDeclaring, TProperty>> propertyAccessor)
         {
-            if (propertyAccessor == null) throw new ArgumentNullException(nameof(propertyAccessor));
+            if (propertyAccessor == null)
+            {
+                throw new ArgumentNullException(nameof(propertyAccessor));
+            }
 
             var mex = propertyAccessor.Body as MemberExpression;
             if (!(mex?.Member is PropertyInfo))
@@ -95,10 +105,12 @@ namespace Autofac.Util
         public static MethodInfo GetMethod<TDeclaring>(
             Expression<Action<TDeclaring>> methodCallExpression)
         {
-            if (methodCallExpression == null) throw new ArgumentNullException(nameof(methodCallExpression));
+            if (methodCallExpression == null)
+            {
+                throw new ArgumentNullException(nameof(methodCallExpression));
+            }
 
-            var callExpression = methodCallExpression.Body as MethodCallExpression;
-            if (callExpression == null)
+            if (!(methodCallExpression.Body is MethodCallExpression callExpression))
             {
                 throw new ArgumentException(string.Format(
                     CultureInfo.CurrentCulture,
@@ -118,10 +130,12 @@ namespace Autofac.Util
         public static ConstructorInfo GetConstructor<TDeclaring>(
             Expression<Func<TDeclaring>> constructorCallExpression)
         {
-            if (constructorCallExpression == null) throw new ArgumentNullException(nameof(constructorCallExpression));
+            if (constructorCallExpression == null)
+            {
+                throw new ArgumentNullException(nameof(constructorCallExpression));
+            }
 
-            var callExpression = constructorCallExpression.Body as NewExpression;
-            if (callExpression == null)
+            if (!(constructorCallExpression.Body is NewExpression callExpression))
             {
                 throw new ArgumentException(string.Format(
                     CultureInfo.CurrentCulture,

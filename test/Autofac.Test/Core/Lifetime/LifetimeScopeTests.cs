@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Autofac.Core;
 using Autofac.Core.Activators.Delegate;
 using Autofac.Core.Lifetime;
+using Autofac.Core.Pipeline;
 using Autofac.Core.Registration;
 using Autofac.Features.Decorators;
 using Autofac.Test.Scenarios.RegistrationSources;
@@ -62,15 +63,13 @@ namespace Autofac.Test.Core.Lifetime
             var service = new TypedService(typeof(Person));
             using (var unconfigured = container.BeginLifetimeScope())
             {
-                IComponentRegistration reg = null;
-                Assert.True(unconfigured.ComponentRegistry.TryGetRegistration(service, out reg), "The registration should have been found in the unconfigured scope.");
+                Assert.True(unconfigured.ComponentRegistry.TryGetRegistration(service, out IComponentRegistration reg), "The registration should have been found in the unconfigured scope.");
                 Assert.Equal(typeof(Person), reg.Activator.LimitType);
             }
 
             using (var configured = container.BeginLifetimeScope(b => { }))
             {
-                IComponentRegistration reg = null;
-                Assert.True(configured.ComponentRegistry.TryGetRegistration(service, out reg), "The registration should have been found in the configured scope.");
+                Assert.True(configured.ComponentRegistry.TryGetRegistration(service, out IComponentRegistration reg), "The registration should have been found in the configured scope.");
                 Assert.Equal(typeof(Person), reg.Activator.LimitType);
             }
         }
@@ -170,10 +169,13 @@ namespace Autofac.Test.Core.Lifetime
 
             public SimplifiedRegistrationSource(ITest instance) => _instance = instance;
 
-            public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<IComponentRegistration>> registrationAccessor)
+            public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
             {
                 // Important that DecoratorService is not included here.
-                if (!(service is IServiceWithType serviceWithType) || service is DecoratorService) yield break;
+                if (!(service is IServiceWithType serviceWithType) || service is DecoratorService)
+                {
+                    yield break;
+                }
 
                 if (IsTestType(serviceWithType.ServiceType))
                 {
@@ -187,7 +189,7 @@ namespace Autofac.Test.Core.Lifetime
                 new ComponentRegistration(
                     Guid.NewGuid(),
                     new DelegateActivator(serviceType, factory),
-                    new CurrentScopeLifetime(),
+                    CurrentScopeLifetime.Instance,
                     InstanceSharing.None,
                     InstanceOwnership.OwnedByLifetimeScope,
                     new[] { service },
@@ -198,7 +200,7 @@ namespace Autofac.Test.Core.Lifetime
         {
             public DependsOnRegisteredInstance(object instance)
             {
-                this.Instance = instance;
+                Instance = instance;
             }
 
             internal object Instance { get; set; }

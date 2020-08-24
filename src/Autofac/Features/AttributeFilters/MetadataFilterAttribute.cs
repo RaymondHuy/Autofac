@@ -101,11 +101,11 @@ namespace Autofac.Features.AttributeFilters
     [SuppressMessage("Microsoft.Design", "CA1018:MarkAttributesWithAttributeUsage", Justification = "Allowing the inherited AttributeUsageAttribute to be used avoids accidental override or conflict at this level.")]
     public sealed class MetadataFilterAttribute : ParameterFilterAttribute
     {
-        private static readonly MethodInfo FilterOneMethod = typeof(MetadataFilterAttribute).GetTypeInfo().GetDeclaredMethod(nameof(FilterOne));
+        private static readonly MethodInfo FilterOneMethod = typeof(MetadataFilterAttribute).GetDeclaredMethod(nameof(FilterOne));
 
-        private static readonly MethodInfo FilterAllMethod = typeof(MetadataFilterAttribute).GetTypeInfo().GetDeclaredMethod(nameof(FilterAll));
+        private static readonly MethodInfo FilterAllMethod = typeof(MetadataFilterAttribute).GetDeclaredMethod(nameof(FilterAll));
 
-        private static readonly MethodInfo CanResolveMethod = typeof(MetadataFilterAttribute).GetTypeInfo().GetDeclaredMethod(nameof(CanResolve));
+        private static readonly MethodInfo CanResolveMethod = typeof(MetadataFilterAttribute).GetDeclaredMethod(nameof(CanResolve));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MetadataFilterAttribute"/> class.
@@ -152,8 +152,15 @@ namespace Autofac.Features.AttributeFilters
         /// </exception>
         public override object ResolveParameter(ParameterInfo parameter, IComponentContext context)
         {
-            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
-            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
             // GetElementType currently is the effective equivalent of "Determine if the type
             // is in IEnumerable and if it is, get the type being enumerated." This doesn't support
@@ -175,8 +182,15 @@ namespace Autofac.Features.AttributeFilters
         /// <returns>true if parameter can be resolved; otherwise, false.</returns>
         public override bool CanResolveParameter(ParameterInfo parameter, IComponentContext context)
         {
-            if (parameter == null) throw new ArgumentNullException(nameof(parameter));
-            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (parameter == null)
+            {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
             // GetElementType currently is the effective equivalent of "Determine if the type
             // is in IEnumerable and if it is, get the type being enumerated." This doesn't support
@@ -189,7 +203,7 @@ namespace Autofac.Features.AttributeFilters
 
         private static Type GetElementType(Type type)
         {
-            return type.IsGenericEnumerableInterfaceType() ? type.GetTypeInfo().GenericTypeArguments[0] : type;
+            return type.IsGenericEnumerableInterfaceType() ? type.GenericTypeArguments[0] : type;
         }
 
         private static T FilterOne<T>(IComponentContext context, string metadataKey, object metadataValue)

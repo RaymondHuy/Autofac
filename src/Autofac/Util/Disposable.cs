@@ -46,7 +46,9 @@ namespace Autofac.Util
         {
             var wasDisposed = Interlocked.Exchange(ref _isDisposed, DisposedFlag);
             if (wasDisposed == DisposedFlag)
+            {
                 return;
+            }
 
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -72,6 +74,7 @@ namespace Autofac.Util
             }
         }
 
+        /// <inheritdoc/>
         [SuppressMessage(
             "Usage",
             "CA1816:Dispose methods should call SuppressFinalize",
@@ -89,9 +92,13 @@ namespace Autofac.Util
                 return DisposeAsync(true);
             }
 
-            return default(ValueTask);
+            return default;
         }
 
+        /// <summary>
+        ///  Releases unmanaged and - optionally - managed resources, asynchronously.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual ValueTask DisposeAsync(bool disposing)
         {
             // Default implementation does a synchronous dispose.

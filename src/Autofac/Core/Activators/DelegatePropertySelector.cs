@@ -17,11 +17,10 @@ namespace Autofac.Core
         /// <param name="finder">Delegate to determine whether a property should be injected.</param>
         public DelegatePropertySelector(Func<PropertyInfo, object, bool> finder)
         {
-            if (finder == null) throw new ArgumentNullException(nameof(finder));
-
-            _finder = finder;
+            _finder = finder ?? throw new ArgumentNullException(nameof(finder));
         }
 
+        /// <inheritdoc/>
         public bool InjectProperty(PropertyInfo property, object instance)
         {
             return _finder(property, instance);

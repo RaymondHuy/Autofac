@@ -56,9 +56,7 @@ namespace Autofac.Core.Activators.Reflection
         /// <param name="finder">The finder function.</param>
         public DefaultConstructorFinder(Func<Type, ConstructorInfo[]> finder)
         {
-            if (finder == null) throw new ArgumentNullException(nameof(finder));
-
-            _finder = finder;
+            _finder = finder ?? throw new ArgumentNullException(nameof(finder));
         }
 
         /// <summary>
@@ -73,8 +71,7 @@ namespace Autofac.Core.Activators.Reflection
 
         private static ConstructorInfo[] GetDefaultPublicConstructors(Type type)
         {
-            var retval = DefaultPublicConstructorsCache.GetOrAdd(
-                type, t => t.GetTypeInfo().DeclaredConstructors.Where(c => c.IsPublic).ToArray());
+            var retval = DefaultPublicConstructorsCache.GetOrAdd(type, t => t.GetDeclaredPublicConstructors());
 
             if (retval.Length == 0)
             {

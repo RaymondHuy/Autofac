@@ -30,38 +30,67 @@ using System.Linq;
 using Autofac.Builder;
 using Autofac.Core;
 using Autofac.Core.Activators.Reflection;
+using Autofac.Core.Pipeline;
+using Autofac.Core.Resolving.Pipeline;
 
 namespace Autofac.Features.OpenGenerics
 {
+    /// <summary>
+    /// Registration source for handling open generic decorators.
+    /// </summary>
     internal class OpenGenericDecoratorRegistrationSource : IRegistrationSource
     {
         private readonly RegistrationData _registrationData;
         private readonly OpenGenericDecoratorActivatorData _activatorData;
+        private readonly IResolvePipelineBuilder _existingPipeline;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OpenGenericDecoratorRegistrationSource"/> class.
+        /// </summary>
+        /// <param name="registrationData">The registration data for the open generic.</param>
+        /// <param name="existingPipelineBuilder">The pipeline for the existing open generic registration.</param>
+        /// <param name="activatorData">The activator data.</param>
         public OpenGenericDecoratorRegistrationSource(
             RegistrationData registrationData,
+            IResolvePipelineBuilder existingPipelineBuilder,
             OpenGenericDecoratorActivatorData activatorData)
         {
-            if (registrationData == null) throw new ArgumentNullException(nameof(registrationData));
-            if (activatorData == null) throw new ArgumentNullException(nameof(activatorData));
+            if (registrationData == null)
+            {
+                throw new ArgumentNullException(nameof(registrationData));
+            }
+
+            if (activatorData == null)
+            {
+                throw new ArgumentNullException(nameof(activatorData));
+            }
 
             OpenGenericServiceBinder.EnforceBindable(activatorData.ImplementationType, registrationData.Services);
 
             if (registrationData.Services.Contains((Service)activatorData.FromService))
+            {
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenGenericDecoratorRegistrationSourceResources.FromAndToMustDiffer, activatorData.FromService));
+            }
 
             _registrationData = registrationData;
             _activatorData = activatorData;
+            _existingPipeline = existingPipelineBuilder;
         }
 
-        public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<IComponentRegistration>> registrationAccessor)
+        /// <inheritdoc/>
+        public IEnumerable<IComponentRegistration> RegistrationsFor(Service service, Func<Service, IEnumerable<ServiceRegistration>> registrationAccessor)
         {
-            if (service == null) throw new ArgumentNullException(nameof(service));
-            if (registrationAccessor == null) throw new ArgumentNullException(nameof(registrationAccessor));
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
 
-            Type? constructedImplementationType;
-            Service[]? services;
-            if (OpenGenericServiceBinder.TryBindServiceType(service, _registrationData.Services, _activatorData.ImplementationType, out constructedImplementationType, out services))
+            if (registrationAccessor == null)
+            {
+                throw new ArgumentNullException(nameof(registrationAccessor));
+            }
+
+            if (OpenGenericServiceBinder.TryBindOpenGenericService(service, _registrationData.Services, _activatorData.ImplementationType, out Type? constructedImplementationType, out Service[]? services))
             {
                 var swt = (IServiceWithType)service;
                 var fromService = _activatorData.FromService.ChangeType(swt.ServiceType);
@@ -71,13 +100,14 @@ namespace Autofac.Features.OpenGenerics
                             Guid.NewGuid(),
                             _registrationData,
                             new ReflectionActivator(constructedImplementationType, _activatorData.ConstructorFinder, _activatorData.ConstructorSelector, AddDecoratedComponentParameter(fromService, swt.ServiceType, cr, _activatorData.ConfiguredParameters), _activatorData.ConfiguredProperties),
+                            _existingPipeline,
                             services));
             }
 
             return Enumerable.Empty<IComponentRegistration>();
         }
 
-        private static Parameter[] AddDecoratedComponentParameter(Service service, Type decoratedParameterType, IComponentRegistration decoratedComponent, IList<Parameter> configuredParameters)
+        private static Parameter[] AddDecoratedComponentParameter(Service service, Type decoratedParameterType, ServiceRegistration decoratedComponent, IList<Parameter> configuredParameters)
         {
             var parameter = new ResolvedParameter(
                 (pi, c) => pi.ParameterType == decoratedParameterType,
@@ -93,8 +123,10 @@ namespace Autofac.Features.OpenGenerics
             return resultArray;
         }
 
+        /// <inheritdoc/>
         public bool IsAdapterForIndividualComponents => true;
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return string.Format(

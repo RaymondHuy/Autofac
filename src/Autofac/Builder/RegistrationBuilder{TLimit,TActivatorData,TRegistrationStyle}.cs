@@ -27,25 +27,53 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Autofac.Core;
 using Autofac.Core.Activators.Reflection;
 using Autofac.Core.Lifetime;
+using Autofac.Core.Resolving.Middleware;
+using Autofac.Core.Resolving.Pipeline;
 using Autofac.Features.OwnedInstances;
 
 namespace Autofac.Builder
 {
+    /// <summary>
+    /// Data structure used to construct registrations.
+    /// </summary>
+    /// <typeparam name="TLimit">The most specific type to which instances of the registration
+    /// can be cast.</typeparam>
+    /// <typeparam name="TActivatorData">Activator builder type.</typeparam>
+    /// <typeparam name="TRegistrationStyle">Registration style type.</typeparam>
     internal class RegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> : IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle>, IHideObjectMembers
         where TLimit : notnull
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegistrationBuilder{TLimit, TActivatorData, TRegistrationStyle}"/> class.
+        /// </summary>
+        /// <param name="defaultService">The default service.</param>
+        /// <param name="activatorData">The activator data.</param>
+        /// <param name="style">The registration style.</param>
         public RegistrationBuilder(Service defaultService, TActivatorData activatorData, TRegistrationStyle style)
         {
-            if (defaultService == null) throw new ArgumentNullException(nameof(defaultService));
-            if (activatorData == null) throw new ArgumentNullException(nameof(activatorData));
-            if (style == null) throw new ArgumentNullException(nameof(style));
+            if (defaultService == null)
+            {
+                throw new ArgumentNullException(nameof(defaultService));
+            }
+
+            if (activatorData == null)
+            {
+                throw new ArgumentNullException(nameof(activatorData));
+            }
+
+            if (style == null)
+            {
+                throw new ArgumentNullException(nameof(style));
+            }
 
             ActivatorData = activatorData;
             RegistrationStyle = style;
             RegistrationData = new RegistrationData(defaultService);
+            ResolvePipeline = new ResolvePipelineBuilder(PipelineType.Registration);
         }
 
         /// <summary>
@@ -65,6 +93,12 @@ namespace Autofac.Builder
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public RegistrationData RegistrationData { get; }
+
+        /// <summary>
+        /// Gets the resolve pipeline builder, that can be used to add middleware to the pipeline.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public IResolvePipelineBuilder ResolvePipeline { get; }
 
         /// <summary>
         /// Configure the component so that instances are never disposed by the container.
@@ -95,7 +129,7 @@ namespace Autofac.Builder
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> InstancePerDependency()
         {
             RegistrationData.Sharing = InstanceSharing.None;
-            RegistrationData.Lifetime = new CurrentScopeLifetime();
+            RegistrationData.Lifetime = CurrentScopeLifetime.Instance;
             return this;
         }
 
@@ -107,7 +141,7 @@ namespace Autofac.Builder
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> SingleInstance()
         {
             RegistrationData.Sharing = InstanceSharing.Shared;
-            RegistrationData.Lifetime = new RootScopeLifetime();
+            RegistrationData.Lifetime = RootScopeLifetime.Instance;
             return this;
         }
 
@@ -120,7 +154,7 @@ namespace Autofac.Builder
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> InstancePerLifetimeScope()
         {
             RegistrationData.Sharing = InstanceSharing.Shared;
-            RegistrationData.Lifetime = new CurrentScopeLifetime();
+            RegistrationData.Lifetime = CurrentScopeLifetime.Instance;
             return this;
         }
 
@@ -135,7 +169,10 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> InstancePerMatchingLifetimeScope(params object[] lifetimeScopeTag)
         {
-            if (lifetimeScopeTag == null) throw new ArgumentNullException(nameof(lifetimeScopeTag));
+            if (lifetimeScopeTag == null)
+            {
+                throw new ArgumentNullException(nameof(lifetimeScopeTag));
+            }
 
             RegistrationData.Sharing = InstanceSharing.Shared;
             RegistrationData.Lifetime = new MatchingScopeLifetime(lifetimeScopeTag);
@@ -296,7 +333,10 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> As(params Service[] services)
         {
-            if (services == null) throw new ArgumentNullException(nameof(services));
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
             RegistrationData.AddServices(services);
 
@@ -310,7 +350,10 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> As(Service service)
         {
-            if (service == null) throw new ArgumentNullException(nameof(service));
+            if (service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
 
             RegistrationData.AddService(service);
 
@@ -325,8 +368,15 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Named(string serviceName, Type serviceType)
         {
-            if (serviceName == null) throw new ArgumentNullException(nameof(serviceName));
-            if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
+            if (serviceName == null)
+            {
+                throw new ArgumentNullException(nameof(serviceName));
+            }
+
+            if (serviceType == null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
 
             return As(new KeyedService(serviceName, serviceType));
         }
@@ -351,8 +401,15 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> Keyed(object serviceKey, Type serviceType)
         {
-            if (serviceKey == null) throw new ArgumentNullException(nameof(serviceKey));
-            if (serviceType == null) throw new ArgumentNullException(nameof(serviceType));
+            if (serviceKey == null)
+            {
+                throw new ArgumentNullException(nameof(serviceKey));
+            }
+
+            if (serviceType == null)
+            {
+                throw new ArgumentNullException(nameof(serviceType));
+            }
 
             return As(new KeyedService(serviceKey, serviceType));
         }
@@ -377,10 +434,45 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> OnPreparing(Action<PreparingEventArgs> handler)
         {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
 
-            RegistrationData.PreparingHandlers.Add((s, e) => handler(e));
+            var middleware = new CoreEventMiddleware(ResolveEventType.OnPreparing, PipelinePhase.ParameterSelection, (ctxt, next) =>
+            {
+                var args = new PreparingEventArgs(ctxt, ctxt.Service, ctxt.Registration, ctxt.Parameters);
+
+                handler(args);
+
+                ctxt.ChangeParameters(args.Parameters);
+
+                // Go down the pipeline now.
+                next(ctxt);
+            });
+
+            ResolvePipeline.Use(middleware);
+
             return this;
+        }
+
+        /// <inheritdoc/>
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> OnPreparing(Func<PreparingEventArgs, ValueTask> handler)
+        {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            return OnPreparing(args =>
+            {
+                var vt = handler(args);
+
+                if (!vt.IsCompletedSuccessfully)
+                {
+                    vt.ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+            });
         }
 
         /// <summary>
@@ -390,15 +482,45 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> OnActivating(Action<IActivatingEventArgs<TLimit>> handler)
         {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-
-            RegistrationData.ActivatingHandlers.Add((s, e) =>
+            if (handler == null)
             {
-                var args = new ActivatingEventArgs<TLimit>(e.Context, e.Component, e.Parameters, (TLimit)e.Instance);
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            var middleware = new CoreEventMiddleware(ResolveEventType.OnActivating, PipelinePhase.Activation, (ctxt, next) =>
+            {
+                next(ctxt);
+
+                var args = new ActivatingEventArgs<TLimit>(ctxt, ctxt.Service, ctxt.Registration, ctxt.Parameters, (TLimit)ctxt.Instance!);
+
                 handler(args);
-                e.Instance = args.Instance;
+                ctxt.Instance = args.Instance;
             });
+
+            // Activation events have to run at the start of the phase, to make sure
+            // that the event handlers run in the same order as they were added to the registration.
+            ResolvePipeline.Use(middleware, MiddlewareInsertionMode.StartOfPhase);
+
             return this;
+        }
+
+        /// <inheritdoc/>
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> OnActivating(Func<IActivatingEventArgs<TLimit>, ValueTask> handler)
+        {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            return OnActivating(args =>
+            {
+                var vt = handler(args);
+
+                if (!vt.IsCompletedSuccessfully)
+                {
+                    vt.ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+            });
         }
 
         /// <summary>
@@ -408,11 +530,59 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> OnActivated(Action<IActivatedEventArgs<TLimit>> handler)
         {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
 
-            RegistrationData.ActivatedHandlers.Add(
-                (s, e) => handler(new ActivatedEventArgs<TLimit>(e.Context, e.Component, e.Parameters, (TLimit)e.Instance)));
+            var middleware = new CoreEventMiddleware(ResolveEventType.OnActivated, PipelinePhase.Activation, (ctxt, next) =>
+            {
+                // Go down the pipeline first.
+                next(ctxt);
+
+                if (!ctxt.NewInstanceActivated)
+                {
+                    return;
+                }
+
+                // Make sure we use the instance at this point, before it is replaced by any decorators.
+                var newInstance = (TLimit)ctxt.Instance!;
+
+                // In order to behave in the same manner as the original activation handler,
+                // we need to attach to the RequestCompleting event so these run at the end after everything else.
+                ctxt.RequestCompleting += (sender, evArgs) =>
+                {
+                    var ctxt = evArgs.RequestContext;
+                    var args = new ActivatedEventArgs<TLimit>(ctxt, ctxt.Service, ctxt.Registration, ctxt.Parameters, newInstance);
+
+                    handler(args);
+                };
+            });
+
+            // Need to insert OnActivated at the start of the phase, to ensure we attach to RequestCompleting in the same order
+            // as calls to OnActivated.
+            ResolvePipeline.Use(middleware, MiddlewareInsertionMode.StartOfPhase);
+
             return this;
+        }
+
+        /// <inheritdoc/>
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> OnActivated(Func<IActivatedEventArgs<TLimit>, ValueTask> handler)
+        {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            return OnActivated(args =>
+            {
+                var vt = handler(args);
+
+                if (!vt.IsCompletedSuccessfully)
+                {
+                    vt.ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+            });
         }
 
         /// <summary>
@@ -424,10 +594,30 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> PropertiesAutowired(IPropertySelector propertySelector, bool allowCircularDependencies)
         {
-            if (allowCircularDependencies)
-                RegistrationData.ActivatedHandlers.Add((s, e) => AutowiringPropertyInjector.InjectProperties(e.Context, e.Instance, propertySelector, e.Parameters));
-            else
-                RegistrationData.ActivatingHandlers.Add((s, e) => AutowiringPropertyInjector.InjectProperties(e.Context, e.Instance, propertySelector, e.Parameters));
+            ResolvePipeline.Use(nameof(PropertiesAutowired), PipelinePhase.Activation, (ctxt, next) =>
+            {
+                // Continue down the pipeline.
+                next(ctxt);
+
+                if (!ctxt.NewInstanceActivated)
+                {
+                    return;
+                }
+
+                if (allowCircularDependencies)
+                {
+                    // If we are allowing circular deps, then we need to run when all requests have completed (similar to Activated).
+                    ctxt.RequestCompleting += (o, args) =>
+                    {
+                        var evCtxt = args.RequestContext;
+                        AutowiringPropertyInjector.InjectProperties(evCtxt, evCtxt.Instance!, propertySelector, evCtxt.Parameters);
+                    };
+                }
+                else
+                {
+                    AutowiringPropertyInjector.InjectProperties(ctxt, ctxt.Instance!, propertySelector, ctxt.Parameters);
+                }
+            });
 
             return this;
         }
@@ -440,7 +630,10 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> WithMetadata(string key, object? value)
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
 
             RegistrationData.Metadata.Add(key, value);
 
@@ -454,10 +647,15 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> WithMetadata(IEnumerable<KeyValuePair<string, object?>> properties)
         {
-            if (properties == null) throw new ArgumentNullException(nameof(properties));
+            if (properties == null)
+            {
+                throw new ArgumentNullException(nameof(properties));
+            }
 
             foreach (var prop in properties)
+            {
                 WithMetadata(prop.Key, prop.Value);
+            }
 
             return this;
         }
@@ -473,11 +671,27 @@ namespace Autofac.Builder
         /// <returns>A registration builder allowing further configuration of the component.</returns>
         public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> WithMetadata<TMetadata>(Action<MetadataConfiguration<TMetadata>> configurationAction)
         {
-            if (configurationAction == null) throw new ArgumentNullException(nameof(configurationAction));
+            if (configurationAction == null)
+            {
+                throw new ArgumentNullException(nameof(configurationAction));
+            }
 
             var epConfiguration = new MetadataConfiguration<TMetadata>();
             configurationAction(epConfiguration);
             return WithMetadata(epConfiguration.Properties);
+        }
+
+        /// <inheritdoc/>
+        public IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> ConfigurePipeline(Action<IResolvePipelineBuilder> configurationAction)
+        {
+            if (configurationAction is null)
+            {
+                throw new ArgumentNullException(nameof(configurationAction));
+            }
+
+            configurationAction(ResolvePipeline);
+
+            return this;
         }
     }
 }

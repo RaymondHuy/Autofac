@@ -47,20 +47,20 @@ namespace Autofac.Util
         /// </param>
         public ReleaseAction(Action<TLimit> action, Func<TLimit> factory)
         {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-            if (factory == null) throw new ArgumentNullException(nameof(factory));
-
-            _action = action;
-            _factory = factory;
+            _action = action ?? throw new ArgumentNullException(nameof(action));
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             // Value retrieval for the disposal is deferred until
             // disposal runs to ensure any calls to, say, .ReplaceInstance()
             // during .OnActivating() will be accounted for.
             if (disposing)
-                _action(this._factory());
+            {
+                _action(_factory());
+            }
 
             base.Dispose(disposing);
         }

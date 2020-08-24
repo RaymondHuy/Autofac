@@ -42,14 +42,24 @@ namespace Autofac.Builder
         /// <param name="callback">The callback to run.</param>
         public void AddCallback(Action<ILifetimeScope> callback)
         {
-            if (callback == null) throw new ArgumentNullException(nameof(callback));
+            if (callback == null)
+            {
+                throw new ArgumentNullException(nameof(callback));
+            }
 
             _callbacks.Add(callback);
         }
 
+        /// <summary>
+        /// Execute the callback for each build callback registered in this service.
+        /// </summary>
+        /// <param name="scope">The scope that has been built.</param>
         public void Execute(ILifetimeScope scope)
         {
-            if (scope == null) throw new ArgumentNullException(nameof(scope));
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
 
             if (_callbacks == null)
             {

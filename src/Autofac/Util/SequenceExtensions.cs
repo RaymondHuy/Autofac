@@ -29,6 +29,9 @@ using System.Linq;
 
 namespace Autofac.Util
 {
+    /// <summary>
+    /// Provides extension methods for working with sequences.
+    /// </summary>
     internal static class SequenceExtensions
     {
         /// <summary>
@@ -40,8 +43,15 @@ namespace Autofac.Util
         /// <returns>The joined string.</returns>
         public static string JoinWith(this IEnumerable<string> elements, string separator)
         {
-            if (elements == null) throw new ArgumentNullException(nameof(elements));
-            if (separator == null) throw new ArgumentNullException(nameof(separator));
+            if (elements == null)
+            {
+                throw new ArgumentNullException(nameof(elements));
+            }
+
+            if (separator == null)
+            {
+                throw new ArgumentNullException(nameof(separator));
+            }
 
             return string.Join(separator, elements.ToArray());
         }
@@ -55,10 +65,15 @@ namespace Autofac.Util
         /// <returns>The sequence with an item appended to the end.</returns>
         public static IEnumerable<T> AppendItem<T>(this IEnumerable<T> sequence, T trailingItem)
         {
-            if (sequence == null) throw new ArgumentNullException(nameof(sequence));
+            if (sequence == null)
+            {
+                throw new ArgumentNullException(nameof(sequence));
+            }
 
             foreach (var t in sequence)
+            {
                 yield return t;
+            }
 
             yield return trailingItem;
         }
@@ -72,18 +87,31 @@ namespace Autofac.Util
         /// <returns>The sequence with an item prepended.</returns>
         public static IEnumerable<T> Prepend<T>(this IEnumerable<T> sequence, T leadingItem)
         {
-            if (sequence == null) throw new ArgumentNullException(nameof(sequence));
+            if (sequence == null)
+            {
+                throw new ArgumentNullException(nameof(sequence));
+            }
 
             yield return leadingItem;
 
             foreach (var t in sequence)
+            {
                 yield return t;
+            }
         }
 
+        /// <summary>
+        /// Add a set of items to the given collection.
+        /// </summary>
+        /// <typeparam name="T">The set type.</typeparam>
+        /// <param name="collection">The collection to add to.</param>
+        /// <param name="items">The set of items to add.</param>
         public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
             foreach (var item in items)
+            {
                 collection.Add(item);
+            }
         }
     }
 }

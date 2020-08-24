@@ -42,6 +42,9 @@ namespace Autofac.Builder
     {
         private readonly IDictionary<string, object?> _properties = new Dictionary<string, object?>();
 
+        /// <summary>
+        /// Gets the set of properties that have been provided.
+        /// </summary>
         internal IEnumerable<KeyValuePair<string, object?>> Properties => _properties;
 
         /// <summary>
@@ -52,7 +55,10 @@ namespace Autofac.Builder
         /// <param name="value">The property value to set.</param>
         public MetadataConfiguration<TMetadata> For<TProperty>(Expression<Func<TMetadata, TProperty>> propertyAccessor, TProperty value)
         {
-            if (propertyAccessor == null) throw new ArgumentNullException(nameof(propertyAccessor));
+            if (propertyAccessor == null)
+            {
+                throw new ArgumentNullException(nameof(propertyAccessor));
+            }
 
             var pn = ReflectionExtensions.GetProperty(propertyAccessor).Name;
             _properties.Add(pn, value);

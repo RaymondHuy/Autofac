@@ -40,9 +40,7 @@ namespace Autofac.Core.Activators
         /// <param name="limitType">Most derived type to which instances can be cast.</param>
         protected InstanceActivator(Type limitType)
         {
-            if (limitType == null) throw new ArgumentNullException(nameof(limitType));
-
-            LimitType = limitType;
+            LimitType = limitType ?? throw new ArgumentNullException(nameof(limitType));
         }
 
         /// <summary>
@@ -59,11 +57,16 @@ namespace Autofac.Core.Activators
             return LimitType.Name + " (" + GetType().Name + ")";
         }
 
+        /// <summary>
+        /// Asserts that the activator has not been disposed.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void CheckNotDisposed()
         {
             if (IsDisposed)
+            {
                 throw new ObjectDisposedException(InstanceActivatorResources.InstanceActivatorDisposed, innerException: null);
+            }
         }
     }
 }
