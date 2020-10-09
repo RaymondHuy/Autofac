@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Linq;
 using System.Reflection;
 using Autofac.Core;
@@ -8,6 +11,9 @@ namespace Autofac.Test.Core
 {
     public class DelegatePropertySelectorTests
     {
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0051
+
         private class InjectPropertyAttribute : Attribute
         {
         }
@@ -21,6 +27,8 @@ namespace Autofac.Test.Core
 
             private int PrivateProperty { get; set; }
         }
+
+#pragma warning restore IDE0051
 
         [Fact]
         public void ThrowsExceptionOnNull()

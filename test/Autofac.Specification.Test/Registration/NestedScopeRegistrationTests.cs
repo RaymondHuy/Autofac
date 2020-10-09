@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac.Core.Registration;
@@ -243,12 +246,12 @@ namespace Autofac.Specification.Test.Registration
 
             public AddressBook(Func<Person> partyFactory)
             {
-                this._partyFactory = partyFactory;
+                _partyFactory = partyFactory;
             }
 
             public Person Add()
             {
-                return this._partyFactory();
+                return _partyFactory();
             }
         }
 

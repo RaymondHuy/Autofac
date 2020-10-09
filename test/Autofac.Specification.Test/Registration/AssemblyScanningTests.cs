@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Reflection;
 using Xunit;
 
@@ -14,12 +17,11 @@ namespace Autofac.Specification.Test.Registration
         public void OnlyServicesAssignableToASpecificTypeAreRegisteredFromAssemblies()
         {
             var container = new ContainerBuilder().Build().BeginLifetimeScope(b =>
-                b.RegisterAssemblyTypes(this.GetType().GetTypeInfo().Assembly)
+                b.RegisterAssemblyTypes(GetType().GetTypeInfo().Assembly)
                     .AssignableTo(typeof(IMyService)));
 
             Assert.Single(container.ComponentRegistry.Registrations);
-            object obj;
-            Assert.True(container.TryResolve(typeof(MyComponent), out obj));
+            Assert.True(container.TryResolve(typeof(MyComponent), out object obj));
             Assert.False(container.TryResolve(typeof(MyComponent2), out obj));
         }
 

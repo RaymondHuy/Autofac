@@ -1,3 +1,6 @@
+// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Linq;
 using Autofac.Test.Util;
@@ -10,7 +13,7 @@ namespace Autofac.Test.Scenarios.Graph1
     {
         public C1(B1 b)
         {
-            this.B = b;
+            B = b;
         }
 
         public B1 B { get; private set; }

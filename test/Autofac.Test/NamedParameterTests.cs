@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Linq;
 using System.Reflection;
 using Autofac.Core;
@@ -30,8 +33,7 @@ namespace Autofac.Test
 
             var namedParam = new NamedParameter("a", new A());
 
-            Func<object> vp;
-            Assert.True(namedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out vp));
+            Assert.True(namedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out Func<object> vp));
         }
 
         private static System.Reflection.ParameterInfo AParamOfCConstructor()
@@ -52,8 +54,7 @@ namespace Autofac.Test
 
             var namedParam = new NamedParameter("b", new B());
 
-            Func<object> vp;
-            Assert.False(namedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out vp));
+            Assert.False(namedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out Func<object> vp));
         }
     }
 }

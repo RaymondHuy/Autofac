@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -370,6 +373,22 @@ namespace Autofac.Specification.Test.Features
             Assert.False(instance.GetterCalled);
         }
 
+        [Fact]
+        public void DecoratedInstanceWithPropertyInjectionAllowingCircularReferencesStillInjects()
+        {
+            var val = "Value";
+
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(val);
+            builder.RegisterType<DecoratedService>().As<IMyService>().PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
+            builder.RegisterDecorator<ServiceDecorator, IMyService>();
+
+            var container = builder.Build();
+            var instance = container.Resolve<IMyService>();
+
+            instance.AssertProp();
+        }
+
         private class ConstructorParamNotAttachedToProperty
         {
             [SuppressMessage("SA1401", "SA1401")]
@@ -377,7 +396,7 @@ namespace Autofac.Specification.Test.Features
 
             public ConstructorParamNotAttachedToProperty(string id)
             {
-                this._id = id;
+                _id = id;
             }
 
             public string Name { get; set; }
@@ -398,14 +417,47 @@ namespace Autofac.Specification.Test.Features
             {
                 private get
                 {
-                    this.GetterCalled = true;
+                    GetterCalled = true;
                     return null;
                 }
 
                 set
                 {
-                    this.SetterCalled = true;
+                    SetterCalled = true;
                 }
+            }
+        }
+
+        private interface IMyService
+        {
+            void AssertProp();
+        }
+
+        private sealed class DecoratedService : IMyService
+        {
+            public string Prop { get; set; }
+
+            public void AssertProp()
+            {
+                if (Prop is null)
+                {
+                    throw new NullReferenceException();
+                }
+            }
+        }
+
+        private sealed class ServiceDecorator : IMyService
+        {
+            private readonly IMyService _decorating;
+
+            public ServiceDecorator(IMyService decorating)
+            {
+                _decorating = decorating;
+            }
+
+            public void AssertProp()
+            {
+                _decorating.AssertProp();
             }
         }
     }

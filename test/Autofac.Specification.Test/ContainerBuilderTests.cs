@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using Autofac.Builder;
 using Autofac.Core;
@@ -184,7 +187,7 @@ namespace Autofac.Specification.Test
             {
                 void BuildCallback(ILifetimeScope c)
                 {
-                    this.Called++;
+                    Called++;
                 }
 
                 builder.RegisterBuildCallback(BuildCallback)

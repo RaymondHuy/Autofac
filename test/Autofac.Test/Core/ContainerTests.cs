@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Threading.Tasks;
 using Autofac.Core;
 using Autofac.Core.Registration;
@@ -25,9 +28,7 @@ namespace Autofac.Test.Core
 
             var c = new ContainerBuilder(builder).Build();
 
-            object o;
-
-            Assert.True(c.TryResolveNamed(name, typeof(string), out o));
+            Assert.True(c.TryResolveNamed(name, typeof(string), out object o));
             Assert.NotNull(o);
 
             Assert.False(c.IsRegistered<object>());

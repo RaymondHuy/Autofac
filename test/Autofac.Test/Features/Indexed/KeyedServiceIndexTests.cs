@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,9 +31,7 @@ namespace Autofac.Test.Features.Indexed
 
             var idx = CreateTarget(cpt, key);
 
-            string val;
-
-            Assert.True(idx.TryGetValue(key, out val));
+            Assert.True(idx.TryGetValue(key, out string val));
             Assert.Same(cpt, val);
         }
 
@@ -50,10 +51,7 @@ namespace Autofac.Test.Features.Indexed
             var cpt = "Hello";
 
             var idx = CreateTarget(cpt, key);
-
-            string val;
-
-            Assert.False(idx.TryGetValue(key + 1, out val));
+            Assert.False(idx.TryGetValue(key + 1, out _));
         }
     }
 }

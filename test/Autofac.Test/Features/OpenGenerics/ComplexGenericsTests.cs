@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -326,8 +329,7 @@ namespace Autofac.Test.Features.OpenGenerics
             var cb = new ContainerBuilder();
             cb.RegisterGeneric(typeof(SelfReferenceConsumer<>)).As(typeof(IBaseGeneric<>));
             var container = cb.Build();
-
-            var instance = container.Resolve<IBaseGeneric<DerivedSelfReferencing>>();
+            container.Resolve<IBaseGeneric<DerivedSelfReferencing>>();
         }
 
         [Fact]
@@ -337,8 +339,7 @@ namespace Autofac.Test.Features.OpenGenerics
             cb.RegisterGeneric(typeof(CGenericNestedProvider<>)).AsImplementedInterfaces();
             cb.RegisterType<CNestedSimpleInterface>().AsImplementedInterfaces();
             var container = cb.Build();
-
-            var instance = container.Resolve<INested<ISimpleInterface>>();
+            container.Resolve<INested<ISimpleInterface>>();
         }
 
         [Fact]

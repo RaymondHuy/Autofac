@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -110,7 +113,7 @@ namespace Autofac.Test.Builder
         {
             public HasNullableValueTypeArray()
             {
-                this.DoubleArray = new double?[] { null, 0.1, null };
+                DoubleArray = new double?[] { null, 0.1, null };
             }
 
             public double?[] DoubleArray { get; set; }
@@ -120,8 +123,8 @@ namespace Autofac.Test.Builder
         {
             public HasNullableValueTypeCollection()
             {
-                this.DoubleCollection = new ReadOnlyCollection<double?>(new double?[] { null, 0.1, null });
-                this.DoubleCollectionInterface = this.DoubleCollection;
+                DoubleCollection = new ReadOnlyCollection<double?>(new double?[] { null, 0.1, null });
+                DoubleCollectionInterface = DoubleCollection;
             }
 
             public ReadOnlyCollection<double?> DoubleCollection { get; set; }
@@ -133,8 +136,8 @@ namespace Autofac.Test.Builder
         {
             public HasNullableValueTypeList()
             {
-                this.DoubleList = new List<double?> { null, 0.1, null };
-                this.DoubleListInterface = this.DoubleList;
+                DoubleList = new List<double?> { null, 0.1, null };
+                DoubleListInterface = DoubleList;
             }
 
             public List<double?> DoubleList { get; set; }
@@ -146,7 +149,7 @@ namespace Autofac.Test.Builder
         {
             public HasValueTypeArray()
             {
-                this.ByteArray = new byte[] { 1, 2, 3 };
+                ByteArray = new byte[] { 1, 2, 3 };
             }
 
             public byte[] ByteArray { get; set; }
@@ -156,8 +159,8 @@ namespace Autofac.Test.Builder
         {
             public HasValueTypeCollection()
             {
-                this.ByteCollection = new Collection<byte> { 1, 2, 3 };
-                this.ByteCollectionInterface = this.ByteCollection;
+                ByteCollection = new Collection<byte> { 1, 2, 3 };
+                ByteCollectionInterface = ByteCollection;
             }
 
             public Collection<byte> ByteCollection { get; set; }
@@ -169,8 +172,8 @@ namespace Autofac.Test.Builder
         {
             public HasValueTypeList()
             {
-                this.ByteList = new List<byte> { 1, 2, 3 };
-                this.ByteListInterface = this.ByteList;
+                ByteList = new List<byte> { 1, 2, 3 };
+                ByteListInterface = ByteList;
             }
 
             public List<byte> ByteList { get; set; }

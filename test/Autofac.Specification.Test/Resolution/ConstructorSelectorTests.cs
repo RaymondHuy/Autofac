@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Xunit;
@@ -42,13 +45,13 @@ namespace Autofac.Specification.Test.Resolution
         {
             yield return new object[]
             {
-                (Expression<Func<MultipleConstructors>>)(() => new MultipleConstructors(default(A1), default(A2))),
+                (Expression<Func<MultipleConstructors>>)(() => new MultipleConstructors(default, default)),
                 2
             };
 
             yield return new object[]
             {
-                (Expression<Func<MultipleConstructors>>)(() => new MultipleConstructors(default(A1))),
+                (Expression<Func<MultipleConstructors>>)(() => new MultipleConstructors(default)),
                 1
             };
         }
@@ -82,17 +85,17 @@ namespace Autofac.Specification.Test.Resolution
         {
             public MultipleConstructors(A1 a1)
             {
-                this.CalledCtor = 1;
+                CalledCtor = 1;
             }
 
             public MultipleConstructors(A1 a1, A2 a2)
             {
-                this.CalledCtor = 2;
+                CalledCtor = 2;
             }
 
             public MultipleConstructors(A1 a1, A2 a2, string s1)
             {
-                this.CalledCtor = 3;
+                CalledCtor = 3;
             }
 
             public int CalledCtor { get; private set; }

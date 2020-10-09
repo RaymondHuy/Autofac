@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -122,32 +125,22 @@ namespace Autofac.Specification.Test.Registration
 
         public class Decorator<T> : IService<T>
         {
-            private readonly IService<T> _decorated;
-
             public Decorator(IService<T> decorated)
             {
-                this._decorated = decorated;
+                Decorated = decorated;
             }
 
-            public IService<T> Decorated
-            {
-                get { return this._decorated; }
-            }
+            public IService<T> Decorated { get; }
         }
 
         public class Decorator : IService
         {
-            private readonly IService _decorated;
-
             public Decorator(IService decorated)
             {
-                this._decorated = decorated;
+                Decorated = decorated;
             }
 
-            public IService Decorated
-            {
-                get { return this._decorated; }
-            }
+            public IService Decorated { get; }
         }
 
         public class ServiceA : IService

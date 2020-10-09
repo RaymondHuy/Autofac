@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Threading.Tasks;
 
 namespace Autofac.Test.Util
@@ -13,12 +16,9 @@ namespace Autofac.Test.Util
 
         public void Dispose()
         {
-            this.IsSyncDisposed = true;
+            IsSyncDisposed = true;
 
-            if (this.Disposing != null)
-            {
-                this.Disposing(this, EventArgs.Empty);
-            }
+            Disposing?.Invoke(this, EventArgs.Empty);
         }
 
         public async ValueTask DisposeAsync()
@@ -27,10 +27,7 @@ namespace Autofac.Test.Util
 
             IsAsyncDisposed = true;
 
-            if (this.Disposing != null)
-            {
-                this.Disposing(this, EventArgs.Empty);
-            }
+            Disposing?.Invoke(this, EventArgs.Empty);
         }
     }
 }

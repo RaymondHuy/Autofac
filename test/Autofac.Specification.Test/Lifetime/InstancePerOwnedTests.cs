@@ -1,4 +1,7 @@
-﻿using Autofac.Core;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Autofac.Core;
 using Autofac.Features.OwnedInstances;
 using Xunit;
 
@@ -133,8 +136,8 @@ namespace Autofac.Specification.Test.Lifetime
         {
             public MessageHandler(ILifetimeScope lifetimeScope, ServiceForHandler service)
             {
-                this.DependentService = service;
-                this.LifetimeScope = lifetimeScope;
+                DependentService = service;
+                LifetimeScope = lifetimeScope;
             }
 
             public ServiceForHandler DependentService { get; set; }
@@ -146,7 +149,7 @@ namespace Autofac.Specification.Test.Lifetime
         {
             public ServiceForHandler(ILifetimeScope lifetimeScope)
             {
-                this.LifetimeScope = lifetimeScope;
+                LifetimeScope = lifetimeScope;
             }
 
             public ILifetimeScope LifetimeScope { get; set; }

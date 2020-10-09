@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Xunit;
 
 namespace Autofac.Specification.Test.Registration
@@ -24,7 +27,7 @@ namespace Autofac.Specification.Test.Registration
         {
             public WithParam(int i, int j)
             {
-                this.Value = i + j;
+                Value = i + j;
             }
 
             public int Value { get; private set; }

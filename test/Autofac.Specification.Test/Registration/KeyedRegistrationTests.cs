@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Autofac.Features.Indexed;
 using Xunit;
 
@@ -16,12 +19,9 @@ namespace Autofac.Specification.Test.Registration
 
             var c = cb.Build();
 
-            object o1;
-            Assert.True(c.TryResolveKeyed(key, typeof(object), out o1));
+            Assert.True(c.TryResolveKeyed(key, typeof(object), out object o1));
             Assert.NotNull(o1);
-
-            object o2;
-            Assert.False(c.TryResolve(typeof(object), out o2));
+            Assert.False(c.TryResolve(typeof(object), out _));
         }
 
         [Fact]
@@ -34,12 +34,9 @@ namespace Autofac.Specification.Test.Registration
 
             var c = cb.Build();
 
-            object o1;
-            Assert.True(c.TryResolveNamed(name, typeof(object), out o1));
+            Assert.True(c.TryResolveNamed(name, typeof(object), out object o1));
             Assert.NotNull(o1);
-
-            object o2;
-            Assert.False(c.TryResolve(typeof(object), out o2));
+            Assert.False(c.TryResolve(typeof(object), out _));
         }
     }
 }

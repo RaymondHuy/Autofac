@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac.Core.Lifetime;
@@ -30,8 +33,7 @@ namespace Autofac.Core
                 throw new ArgumentNullException(nameof(registration));
             }
 
-            var lifetime = registration.Lifetime as MatchingScopeLifetime;
-            if (lifetime != null)
+            if (registration.Lifetime is MatchingScopeLifetime lifetime)
             {
                 return lifetime.TagsToMatch;
             }

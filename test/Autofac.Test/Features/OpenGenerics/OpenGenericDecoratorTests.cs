@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -37,17 +40,12 @@ namespace Autofac.Test.Features.OpenGenerics
 
         public abstract class Decorator<T> : IService<T>
         {
-            private readonly IService<T> _decorated;
-
             protected Decorator(IService<T> decorated)
             {
-                _decorated = decorated;
+                Decorated = decorated;
             }
 
-            public IService<T> Decorated
-            {
-                get { return _decorated; }
-            }
+            public IService<T> Decorated { get; }
         }
 
         public class DecoratorA<T> : Decorator<T>
@@ -60,23 +58,18 @@ namespace Autofac.Test.Features.OpenGenerics
 
         public class DecoratorB<T> : Decorator<T>
         {
-            private readonly string _parameter;
-
             public DecoratorB(IService<T> decorated, string parameter)
                 : base(decorated)
             {
-                _parameter = parameter;
+                Parameter = parameter;
             }
 
-            public string Parameter
-            {
-                get { return _parameter; }
-            }
+            public string Parameter { get; }
         }
 
         private const string ParameterValue = "Abc";
 
-        private IContainer _container;
+        private readonly IContainer _container;
 
         public OpenGenericDecoratorTests()
         {

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -106,8 +109,7 @@ namespace Autofac.Specification.Test.Registration
                     .AssignableTo(typeof(IMyService)));
 
             Assert.Single(container.ComponentRegistry.Registrations);
-            object obj;
-            Assert.True(container.TryResolve(typeof(MyComponent), out obj));
+            Assert.True(container.TryResolve(typeof(MyComponent), out object obj));
             Assert.False(container.TryResolve(typeof(MyComponent2), out obj));
         }
 

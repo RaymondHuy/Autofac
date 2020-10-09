@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac.Core;
@@ -273,6 +276,9 @@ namespace Autofac.Specification.Test.Features
             }
         }
 
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0060
+
         private class AThatDependsOnB
         {
             public AThatDependsOnB(BThatCreatesA bThatCreatesA)
@@ -299,24 +305,15 @@ namespace Autofac.Specification.Test.Features
         // circular dependency.
         private class ComponentConsumer
         {
-            private Dependency _dependency;
-
-            private IService _service;
-
             public ComponentConsumer(IService service, Dependency dependency)
             {
-                this._service = service;
-                this._dependency = dependency;
             }
         }
 
         private class Dependency
         {
-            private IService _service;
-
             public Dependency(IService service)
             {
-                this._service = service;
             }
         }
 
@@ -347,12 +344,12 @@ namespace Autofac.Specification.Test.Features
 
         private class ServiceImpl : IService
         {
-            private Guid _id;
-
             public ServiceImpl(Guid id)
             {
-                this._id = id;
             }
         }
+
+#pragma warning restore IDE0060
+
     }
 }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using Autofac.Specification.Test.Util;
 using Xunit;
@@ -210,7 +213,7 @@ namespace Autofac.Specification.Test.Lifetime
         {
             public B(A a)
             {
-                this.A = a;
+                A = a;
             }
 
             public A A { get; private set; }

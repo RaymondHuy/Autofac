@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac.Builder;
@@ -71,8 +74,7 @@ namespace Autofac.Test.Core.Registration
 
             var registry = registryBuilder.Build();
 
-            IComponentRegistration defaultRegistration;
-            Assert.True(registry.TryGetRegistration(new TypedService(typeof(object)), out defaultRegistration));
+            Assert.True(registry.TryGetRegistration(new TypedService(typeof(object)), out IComponentRegistration defaultRegistration));
             Assert.Same(r2, defaultRegistration);
         }
 
@@ -81,9 +83,7 @@ namespace Autofac.Test.Core.Registration
         {
             var registryBuilder = Factory.CreateEmptyComponentRegistryBuilder();
             var registry = registryBuilder.Build();
-
-            IComponentRegistration unused;
-            Assert.False(registry.TryGetRegistration(new TypedService(typeof(object)), out unused));
+            Assert.False(registry.TryGetRegistration(new TypedService(typeof(object)), out _));
         }
 
         [Fact]
@@ -92,9 +92,7 @@ namespace Autofac.Test.Core.Registration
             var registryBuilder = Factory.CreateEmptyComponentRegistryBuilder();
             registryBuilder.AddRegistrationSource(new ObjectRegistrationSource());
             var registry = registryBuilder.Build();
-
-            IComponentRegistration registration;
-            Assert.True(registry.TryGetRegistration(new TypedService(typeof(object)), out registration));
+            Assert.True(registry.TryGetRegistration(new TypedService(typeof(object)), out _));
         }
 
         [Fact]
@@ -107,8 +105,7 @@ namespace Autofac.Test.Core.Registration
             registryBuilder.AddRegistrationSource(new ObjectRegistrationSource());
             var registry = registryBuilder.Build();
 
-            IComponentRegistration defaultForObject;
-            registry.TryGetRegistration(new TypedService(typeof(object)), out defaultForObject);
+            registry.TryGetRegistration(new TypedService(typeof(object)), out IComponentRegistration defaultForObject);
 
             Assert.Same(r, defaultForObject);
         }
@@ -226,8 +223,7 @@ namespace Autofac.Test.Core.Registration
             registryBuilder.AddRegistrationSource(new ObjectRegistrationSource(second));
             var registry = registryBuilder.Build();
 
-            IComponentRegistration def;
-            registry.TryGetRegistration(new TypedService(typeof(object)), out def);
+            registry.TryGetRegistration(new TypedService(typeof(object)), out IComponentRegistration def);
 
             var invoker = def.Activator.GetPipelineInvoker(registry);
 

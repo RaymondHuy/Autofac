@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac.Core;
@@ -54,9 +57,8 @@ namespace Autofac.Test.Features.OpenGenerics
             var cb = new ContainerBuilder();
             cb.RegisterGeneric(typeof(G<>)).As(typeof(IG<>));
             var container = cb.Build();
-            IComponentRegistration cr;
             Assert.True(container.ComponentRegistry.TryGetRegistration(
-                new TypedService(typeof(IG<int>)), out cr));
+                new TypedService(typeof(IG<int>)), out IComponentRegistration cr));
             Assert.Equal(typeof(G<int>), cr.Activator.LimitType);
         }
 

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Reflection;
 using Autofac.Core;
 using Xunit;
@@ -27,6 +30,9 @@ namespace Autofac.Test.Core
 
             Assert.Equal(expected, finder.InjectProperty(property, instance));
         }
+
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0051
 
         private class HasProperties
         {
@@ -62,5 +68,8 @@ namespace Autofac.Test.Core
         private class Test
         {
         }
+
+#pragma warning disable IDE0051
+
     }
 }

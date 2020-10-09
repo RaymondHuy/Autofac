@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -125,6 +128,9 @@ namespace Autofac.Specification.Test.Registration
             Assert.IsType<Composite1>(container.Resolve<I1>());
         }
 
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0060
+
         private class Module1 : Module
         {
             protected override void Load(ContainerBuilder builder)
@@ -190,9 +196,12 @@ namespace Autofac.Specification.Test.Registration
                     throw new ArgumentNullException(nameof(builder));
                 }
 
-                this.ConfigureCalled = true;
+                ConfigureCalled = true;
                 builder.RegisterType<object>().SingleInstance();
             }
         }
+
+#pragma warning disable IDE0060
+
     }
 }

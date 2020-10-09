@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Linq;
 using System.Reflection;
 using Xunit;
@@ -29,8 +32,7 @@ namespace Autofac.Test
 
             var typedParam = new TypedParameter(typeof(A), new A());
 
-            Func<object> vp;
-            Assert.True(typedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out vp));
+            Assert.True(typedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out Func<object> vp));
         }
 
         private static System.Reflection.ParameterInfo AParamOfCConstructor()
@@ -51,8 +53,7 @@ namespace Autofac.Test
 
             var typedParam = new TypedParameter(typeof(B), new B());
 
-            Func<object> vp;
-            Assert.False(typedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out vp));
+            Assert.False(typedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out Func<object> vp));
         }
 
         [Fact]
@@ -62,8 +63,7 @@ namespace Autofac.Test
 
             var typedParam = new TypedParameter(typeof(string), "Yo!");
 
-            Func<object> vp;
-            Assert.False(typedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out vp));
+            Assert.False(typedParam.CanSupplyValue(param, Factory.CreateEmptyContainer(), out Func<object> vp));
         }
 
         [Fact]

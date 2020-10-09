@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac.Builder;
@@ -78,7 +81,7 @@ namespace Autofac.Test.Features.GeneratedFactories
                 _qs = qs;
             }
 
-            private QuoteService _qs;
+            private readonly QuoteService _qs;
 
             public string Symbol { get; private set; }
 
@@ -383,9 +386,9 @@ namespace Autofac.Test.Features.GeneratedFactories
             // because of the redundant types in the constructor.
             public DuplicateConstructorParameterTypes(int a, int b, string c)
             {
-                this.A = a;
-                this.B = b;
-                this.C = c;
+                A = a;
+                B = b;
+                C = c;
             }
         }
     }

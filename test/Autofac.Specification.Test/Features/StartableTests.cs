@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Autofac.Builder;
 using Autofac.Core;
 using Xunit;
@@ -113,7 +116,9 @@ namespace Autofac.Specification.Test.Features
             // Issue #916
             var builder = new ContainerBuilder();
             builder.RegisterType<StartableCreatesLifetimeScope>().As<IStartable>().SingleInstance();
-            var container = builder.Build();
+
+            // Assert.DoesNotThrow, basically.
+            builder.Build();
         }
 
         [Fact]
@@ -165,6 +170,9 @@ namespace Autofac.Specification.Test.Features
             Assert.Equal(expectedStartCount, StartableDependency.Count);
         }
 
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0060
+
         private class ComponentTakesStartableDependency : IStartable
         {
             public ComponentTakesStartableDependency(StartableTakesDependency dependency, bool expectStarted)
@@ -191,7 +199,7 @@ namespace Autofac.Specification.Test.Features
 
             public void Start()
             {
-                this.StartCount++;
+                StartCount++;
             }
         }
 
@@ -202,24 +210,24 @@ namespace Autofac.Specification.Test.Features
 
             public StartableCreatesLifetimeScope(ILifetimeScope scope)
             {
-                this._scope = scope;
+                _scope = scope;
             }
 
             public void Start()
             {
-                using (var nested = this._scope.BeginLifetimeScope("tag", b => { }))
+                using (var nested = _scope.BeginLifetimeScope("tag", b => { }))
                 {
                 }
 
-                using (var nested = this._scope.BeginLifetimeScope(b => { }))
+                using (var nested = _scope.BeginLifetimeScope(b => { }))
                 {
                 }
 
-                using (var nested = this._scope.BeginLifetimeScope("tag"))
+                using (var nested = _scope.BeginLifetimeScope("tag"))
                 {
                 }
 
-                using (var nested = this._scope.BeginLifetimeScope())
+                using (var nested = _scope.BeginLifetimeScope())
                 {
                 }
             }
@@ -245,8 +253,11 @@ namespace Autofac.Specification.Test.Features
 
             public void Start()
             {
-                this.WasStarted = true;
+                WasStarted = true;
             }
         }
+
+#pragma warning disable IDE0060
+
     }
 }

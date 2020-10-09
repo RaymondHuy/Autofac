@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Autofac.Specification.Test.Util;
 using Xunit;
 
@@ -29,7 +32,7 @@ namespace Autofac.Specification.Test.Lifetime
             var c = cb.Build();
             var a1 = c.Resolve<DisposeTracker>();
             var lifetime = c.BeginLifetimeScope();
-            var a2 = lifetime.Resolve<DisposeTracker>();
+            lifetime.Resolve<DisposeTracker>();
             lifetime.Dispose();
             Assert.False(a1.IsDisposed);
             c.Dispose();

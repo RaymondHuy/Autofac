@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Linq;
 using System.Reflection;
 using Autofac.Core;
@@ -89,8 +92,7 @@ namespace Autofac.Test.Core
             var container = builder.Build();
             var rp = ResolvedParameter.ForKeyed<char>(k);
             var cp = GetCharParameter();
-            Func<object> vp;
-            Assert.True(rp.CanSupplyValue(cp, container, out vp));
+            Assert.True(rp.CanSupplyValue(cp, container, out Func<object> vp));
         }
 
         [Fact]
@@ -98,8 +100,7 @@ namespace Autofac.Test.Core
         {
             var rp = ResolvedParameter.ForKeyed<char>(new object());
             var cp = GetCharParameter();
-            Func<object> vp;
-            var canSupply = rp.CanSupplyValue(cp, new ContainerBuilder().Build(), out vp);
+            var canSupply = rp.CanSupplyValue(cp, new ContainerBuilder().Build(), out Func<object> vp);
             Assert.False(canSupply);
         }
 

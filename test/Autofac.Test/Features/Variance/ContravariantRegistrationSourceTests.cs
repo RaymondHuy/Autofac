@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +14,9 @@ namespace Autofac.Test.Features.Variance
 {
     public class ContravariantRegistrationSourceTests
     {
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0060
+
         internal interface IHandler<in TCommand>
         {
             void Handle(TCommand command);
@@ -95,6 +101,8 @@ namespace Autofac.Test.Features.Variance
             Second,
         }
 
+#pragma warning restore IDE0060
+
         internal static class AssertExtensions
         {
             public static void AssertSingleHandlerCanHandle<TCommand>(IContainer container)
@@ -107,7 +115,7 @@ namespace Autofac.Test.Features.Variance
 
         public class WhenAHandlerForAConcreteTypeIsRegistered
         {
-            private IContainer _container;
+            private readonly IContainer _container;
 
             public WhenAHandlerForAConcreteTypeIsRegistered()
             {
@@ -150,7 +158,7 @@ namespace Autofac.Test.Features.Variance
 
         public class WhenAHandlerForAnInterfaceTypeIsRegistered
         {
-            private IContainer _container;
+            private readonly IContainer _container;
 
             public WhenAHandlerForAnInterfaceTypeIsRegistered()
             {
@@ -205,7 +213,7 @@ namespace Autofac.Test.Features.Variance
 
         public class WhenAHandlerForObjectIsRegistered
         {
-            private IContainer _container;
+            private readonly IContainer _container;
 
             public WhenAHandlerForObjectIsRegistered()
             {

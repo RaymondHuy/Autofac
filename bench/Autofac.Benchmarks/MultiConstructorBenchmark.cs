@@ -7,7 +7,7 @@ namespace Autofac.Benchmarks
 {
     public class MultiConstructorBenchmark
     {
-        private IContainer container;
+        private IContainer _container;
 
         [GlobalSetup]
         public void Setup()
@@ -23,38 +23,41 @@ namespace Autofac.Benchmarks
             builder.RegisterType<D3>();
             builder.RegisterType<D4>();
 
-            container = builder.Build();
+            _container = builder.Build();
         }
 
         [Benchmark(Baseline = true)]
         public void Single()
         {
-            container.Resolve<OneConstructor>();
+            _container.Resolve<OneConstructor>();
         }
 
         [Benchmark]
         public void Two()
         {
-            container.Resolve<TwoConstructors>();
+            _container.Resolve<TwoConstructors>();
         }
 
         [Benchmark]
         public void TwoValidOneInvalid()
         {
-            container.Resolve<TwoValidConstructorsOneInvalid>();
+            _container.Resolve<TwoValidConstructorsOneInvalid>();
         }
 
         [Benchmark]
         public void Three()
         {
-            container.Resolve<ThreeConstructors>();
+            _container.Resolve<ThreeConstructors>();
         }
 
         [Benchmark]
         public void Four()
         {
-            container.Resolve<FourConstructors>();
+            _container.Resolve<FourConstructors>();
         }
+
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0060
 
         private class OneConstructor
         {
@@ -138,5 +141,7 @@ namespace Autofac.Benchmarks
         private class D4
         {
         }
+
+#pragma warning restore IDE0060
     }
 }

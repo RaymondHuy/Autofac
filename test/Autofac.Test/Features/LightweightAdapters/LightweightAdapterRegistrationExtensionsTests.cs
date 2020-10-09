@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
 using System.Linq;
 using Autofac.Core;
 using Autofac.Features.Indexed;
@@ -82,30 +85,6 @@ namespace Autofac.Test.Features.LightweightAdapters
             public void AdaptedMetadataIsPassed()
             {
                 Assert.Equal(Name, _to.Name);
-            }
-        }
-
-        public class DecoratingServiceThatHasDefaultImplementation
-        {
-            private readonly IContainer _container;
-
-            public DecoratingServiceThatHasDefaultImplementation()
-            {
-                const string from = "from";
-                var builder = new ContainerBuilder();
-
-                builder.RegisterType<Implementer1>().As<IService>().Named<IService>(from);
-                builder.RegisterDecorator<IService>(s => new Decorator(s), from);
-
-                _container = builder.Build();
-            }
-
-            [Fact(Skip = "Issue #529 => #880")]
-            public void InstanceWithDefaultImplementationIsDecorated()
-            {
-                var decorator = _container.Resolve<IService>();
-                Assert.IsType<Decorator>(decorator);
-                Assert.IsType<Implementer1>(((Decorator)decorator).Decorated);
             }
         }
 

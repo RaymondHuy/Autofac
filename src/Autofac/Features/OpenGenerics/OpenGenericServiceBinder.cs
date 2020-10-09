@@ -1,27 +1,5 @@
-﻿// This software is part of the Autofac IoC container
-// Copyright © 2011 Autofac Contributors
-// https://autofac.org
-//
-// Permission is hereby granted, free of charge, to any person
-// obtaining a copy of this software and associated documentation
-// files (the "Software"), to deal in the Software without
-// restriction, including without limitation the rights to use,
-// copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the
-// Software is furnished to do so, subject to the following
-// conditions:
-//
-// The above copyright notice and this permission notice shall be
-// included in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-// OTHER DEALINGS IN THE SOFTWARE.
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -197,32 +175,38 @@ namespace Autofac.Features.OpenGenerics
                 return serviceGenericArguments;
             }
 
+            if (!serviceType.IsInterface)
+            {
+                return TryFindServiceArgumentsForImplementation(implementationType, serviceGenericArguments, serviceTypeDefinition.GetGenericArguments());
+            }
+
+            var availableArguments = GetInterfaces(implementationType, serviceType)
+                .Select(t => TryFindServiceArgumentsForImplementation(
+                    implementationType,
+                    serviceGenericArguments,
+                    t.GenericTypeArguments))
+                .ToArray();
+
+            var exactMatch = availableArguments.FirstOrDefault(a => a.SequenceEqual(serviceGenericArguments));
+            return exactMatch ?? availableArguments[0];
+        }
+
+        private static Type[] TryFindServiceArgumentsForImplementation(Type implementationType, IEnumerable<Type> serviceGenericArguments, IEnumerable<Type> serviceArgumentDefinitions)
+        {
+            var serviceArgumentDefinitionToArgumentMapping =
+                serviceArgumentDefinitions.Zip(serviceGenericArguments, (a, b) => new KeyValuePair<Type, Type>(a, b));
+
             var implementationGenericArgumentDefinitions = implementationType.GetGenericArguments();
-            var serviceArgumentDefinitions = serviceType.IsInterface ?
-                    GetInterface(implementationType, serviceType).GenericTypeArguments :
-                    serviceTypeDefinition.GetGenericArguments();
-
-            var serviceArgumentDefinitionToArgumentMapping = serviceArgumentDefinitions.Zip(serviceGenericArguments, (a, b) => new KeyValuePair<Type, Type>(a, b));
-
             return implementationGenericArgumentDefinitions
                 .Select(implementationGenericArgumentDefinition => TryFindServiceArgumentForImplementationArgumentDefinition(
                     implementationGenericArgumentDefinition, serviceArgumentDefinitionToArgumentMapping))
                 .ToArray();
         }
 
-        private static Type GetInterface(Type implementationType, Type serviceType)
-        {
-            try
-            {
-                return implementationType.GetInterfaces()
-                    .First(i => i.Name == serviceType.Name && i.Namespace == serviceType.Namespace);
-            }
-            catch (InvalidOperationException)
-            {
-                var message = string.Format(CultureInfo.CurrentCulture, OpenGenericServiceBinderResources.ImplementorDoesntImplementService, implementationType.FullName, serviceType.FullName);
-                throw new InvalidOperationException(message);
-            }
-        }
+        private static Type[] GetInterfaces(Type implementationType, Type serviceType) =>
+            implementationType.GetInterfaces()
+                .Where(i => i.Name == serviceType.Name && i.Namespace == serviceType.Namespace)
+                .ToArray();
 
         private static Type TryFindServiceArgumentForImplementationArgumentDefinition(Type implementationGenericArgumentDefinition, IEnumerable<KeyValuePair<Type, Type>> serviceArgumentDefinitionToArgument)
         {
@@ -277,9 +261,10 @@ namespace Autofac.Features.OpenGenerics
 
                 if (service.ServiceType.IsInterface)
                 {
-                    if (GetInterface(implementationType, service.ServiceType) == null)
+                    if (GetInterfaces(implementationType, service.ServiceType).Length == 0)
                     {
-                        throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, OpenGenericServiceBinderResources.InterfaceIsNotImplemented, implementationType, service));
+                        var message = string.Format(CultureInfo.CurrentCulture, OpenGenericServiceBinderResources.ImplementorDoesntImplementService, implementationType.FullName, service.ServiceType.FullName);
+                        throw new InvalidOperationException(message);
                     }
                 }
                 else

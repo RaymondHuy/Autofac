@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Autofac.Builder;
 using Autofac.Core;
 using Xunit;
@@ -13,9 +16,8 @@ namespace Autofac.Test.Builder
             var cb = new ContainerBuilder();
             cb.RegisterInstance("Hello").As<object>();
             var container = cb.Build();
-            IComponentRegistration cr;
             Assert.True(container.ComponentRegistry.TryGetRegistration(
-                new TypedService(typeof(object)), out cr));
+                new TypedService(typeof(object)), out IComponentRegistration cr));
             Assert.Equal(typeof(string), cr.Activator.LimitType);
         }
 

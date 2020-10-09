@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac.Features.Decorators;
@@ -981,6 +984,23 @@ namespace Autofac.Specification.Test.Features
             Assert.IsType<ImplementorA>(instance.Decorated);
         }
 
+        [Fact]
+        public void DecoratorsApplyToNamedAndDefaultServices()
+        {
+            // Issue #529, #880: Old decorator syntax failed if a component
+            // being decorated was registered with both As<T>() and Named<T>().
+            var builder = new ContainerBuilder();
+
+            builder.RegisterType<ImplementorA>().As<IDecoratedService>().Named<IDecoratedService>("service");
+            builder.RegisterDecorator<DecoratorA, IDecoratedService>();
+            var container = builder.Build();
+
+            var instance = container.Resolve<IDecoratedService>();
+
+            Assert.IsType<DecoratorA>(instance);
+            Assert.IsType<ImplementorA>(instance.Decorated);
+        }
+
         [Theory]
         [InlineData(typeof(IDecoratedService), typeof(ISomeOtherService))]
         [InlineData(typeof(ISomeOtherService), typeof(IDecoratedService))]
@@ -1197,7 +1217,7 @@ namespace Autofac.Specification.Test.Features
         {
             protected Decorator(IDecoratedService decorated)
             {
-                this.Decorated = decorated;
+                Decorated = decorated;
             }
 
             public IDecoratedService Decorated { get; }
@@ -1224,7 +1244,7 @@ namespace Autofac.Specification.Test.Features
             public DecoratorWithContextA(IDecoratedService decorated, IDecoratorContext context)
                 : base(decorated)
             {
-                this.Context = context;
+                Context = context;
             }
 
             public IDecoratorContext Context { get; }
@@ -1236,7 +1256,7 @@ namespace Autofac.Specification.Test.Features
             public DecoratorWithContextB(IDecoratedService decorated, IDecoratorContext context)
                 : base(decorated)
             {
-                this.Context = context;
+                Context = context;
             }
 
             public IDecoratorContext Context { get; }
@@ -1246,7 +1266,7 @@ namespace Autofac.Specification.Test.Features
         {
             public DecoratorWithFunc(Func<IDecoratedService> decorated)
             {
-                this.Decorated = decorated();
+                Decorated = decorated();
             }
 
             public IDecoratedService Decorated { get; }
@@ -1256,7 +1276,7 @@ namespace Autofac.Specification.Test.Features
         {
             public DecoratorWithLazy(Lazy<IDecoratedService> decorated)
             {
-                this.Decorated = decorated.Value;
+                Decorated = decorated.Value;
             }
 
             public IDecoratedService Decorated { get; }
@@ -1267,7 +1287,7 @@ namespace Autofac.Specification.Test.Features
             public DecoratorWithParameter(IDecoratedService decorated, string parameter)
                 : base(decorated)
             {
-                this.Parameter = parameter;
+                Parameter = parameter;
             }
 
             public string Parameter { get; }
@@ -1285,7 +1305,7 @@ namespace Autofac.Specification.Test.Features
 
             public void Dispose()
             {
-                this.DisposeCallCount++;
+                DisposeCallCount++;
             }
         }
 
@@ -1298,7 +1318,7 @@ namespace Autofac.Specification.Test.Features
 
             public void Dispose()
             {
-                this.DisposeCallCount++;
+                DisposeCallCount++;
             }
         }
 
@@ -1318,7 +1338,7 @@ namespace Autofac.Specification.Test.Features
         {
             public ImplementorWithParameters(string parameter)
             {
-                this.Parameter = parameter;
+                Parameter = parameter;
             }
 
             public IDecoratedService Decorated => this;
@@ -1341,7 +1361,7 @@ namespace Autofac.Specification.Test.Features
 
             public void Start()
             {
-                this.Started = true;
+                Started = true;
             }
         }
 
@@ -1357,7 +1377,7 @@ namespace Autofac.Specification.Test.Features
 
             public void Start()
             {
-                this.Decorated.Start();
+                Decorated.Start();
             }
         }
     }

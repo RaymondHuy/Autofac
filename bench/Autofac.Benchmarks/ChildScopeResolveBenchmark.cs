@@ -10,7 +10,7 @@ namespace Autofac.Benchmarks
         [Benchmark]
         public void Resolve()
         {
-            using (var requestScope = this._container.BeginLifetimeScope("request", b => b.RegisterType<C1>()))
+            using (var requestScope = _container.BeginLifetimeScope("request", b => b.RegisterType<C1>()))
             {
                 using (var unitOfWorkScope = requestScope.BeginLifetimeScope())
                 {
@@ -30,8 +30,11 @@ namespace Autofac.Benchmarks
             builder.RegisterType<C2>().InstancePerLifetimeScope();
             builder.RegisterType<D1>().SingleInstance();
             builder.RegisterType<D2>().SingleInstance();
-            this._container = builder.Build();
+            _container = builder.Build();
         }
+
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0060
 
         internal class A
         {
@@ -61,5 +64,8 @@ namespace Autofac.Benchmarks
         internal class D1 { }
 
         internal class D2 { }
+
+#pragma warning restore IDE0060
+
     }
 }

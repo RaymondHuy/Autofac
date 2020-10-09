@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 
 namespace Autofac.Specification.Test.Util
 {
@@ -10,8 +13,8 @@ namespace Autofac.Specification.Test.Util
 
         public void Dispose()
         {
-            this.IsDisposed = true;
-            this.Disposing?.Invoke(this, EventArgs.Empty);
+            IsDisposed = true;
+            Disposing?.Invoke(this, EventArgs.Empty);
         }
     }
 }

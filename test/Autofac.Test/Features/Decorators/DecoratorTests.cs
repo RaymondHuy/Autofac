@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Linq;
 using Autofac.Core;
 using Autofac.Diagnostics;
@@ -224,7 +227,7 @@ namespace Autofac.Test.Features.Decorators
         {
             protected Decorator(IDecoratedService decorated)
             {
-                this.Decorated = decorated;
+                Decorated = decorated;
             }
 
             public IDecoratedService Decorated { get; }

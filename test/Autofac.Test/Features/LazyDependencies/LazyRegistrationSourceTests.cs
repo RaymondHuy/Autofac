@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Autofac Project. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Xunit;
 
 namespace Autofac.Test.Features.LazyDependencies
@@ -44,7 +47,7 @@ namespace Autofac.Test.Features.LazyDependencies
             Assert.False(lazy.IsValueCreated);
         }
 
-        [Fact(Skip = "#718")]
+        [Fact]
         public void LazyWorksWithCircularPropertyDependencies()
         {
             var builder = new ContainerBuilder();
@@ -59,11 +62,13 @@ namespace Autofac.Test.Features.LazyDependencies
             Assert.NotNull(container.Resolve<A>());
         }
 
+        // Disable "unused parameter" warnings for test types.
+#pragma warning disable IDE0060
+
         private class A
         {
             public A(Lazy<B> b)
             {
-                var myB = b.Value;
             }
         }
 
@@ -71,5 +76,8 @@ namespace Autofac.Test.Features.LazyDependencies
         {
             public A A { get; set; }
         }
+
+#pragma warning restore IDE0060
+
     }
 }
